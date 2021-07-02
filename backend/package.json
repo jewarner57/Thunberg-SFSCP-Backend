@@ -1,0 +1,29 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "preinstall": "npm i nodemon -g",
+    "test": "mocha ./tests/*.js --exit",
+    "start": "node app.js",
+    "dev": "nodemon --exec babel-node app.js localhost 5000"
+  },
+  "keywords": [],
+  "author": "Yin",
+  "license": "MIT",
+  "dependencies": {
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-validator": "^6.12.0",
+    "mongodb": "^3.6.9",
+    "mongoose": "^5.13.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.14.6",
+    "@babel/node": "^7.14.7",
+    "@babel/preset-env": "^7.14.7",
+    "nodemon": "^2.0.9"
+  }
+}
