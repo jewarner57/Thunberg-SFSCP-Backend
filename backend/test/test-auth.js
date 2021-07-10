@@ -41,7 +41,7 @@ describe('User API endpoints', () => {
     sampleUser.save()
       .then(() => {
         agent
-          .post('/login')
+          .post('/user/signin')
           .send({ email: 'user@test.com', password: 'mypassword' })
           .then((res) => {
             console.log(res.body.message)
@@ -53,7 +53,7 @@ describe('User API endpoints', () => {
   // POST Signup
   it('should sign up a new user', (done) => {
     chai.request(app)
-      .post('/signup')
+      .post('/user/signup')
       .send({ email: 'another@test.com', password: 'mypassword' })
       .end((err, res) => {
         if (err) { done(err) }
@@ -63,20 +63,21 @@ describe('User API endpoints', () => {
         expect(res).to.have.cookie('nToken');
 
         // check that user is actually inserted into database
-        User.findOne({ email: 'another@test.com' }).then((user) => {
-          expect(user).to.be.an('object')
-          done()
-        }).catch((err) => {
-          done(err)
-        })
+        User.findOne({ email: 'another@test.com' })
+          .then((user) => {
+            expect(user).to.be.an('object')
+            done()
+          }).catch((err) => {
+            done(err)
+          })
       })
   })
 })
 
 // POST Login
-it('should be able to login', (done) => {
+it('should be able to sign in', (done) => {
   chai.request(app)
-    .post('/login')
+    .post('/user/signin')
     .send({ email: 'user@test.com', password: 'mypassword' })
     .end((err, res) => {
       if (err) { done(err) }
@@ -89,9 +90,9 @@ it('should be able to login', (done) => {
 });
 
 // POST Logout
-it('should be able to logout', (done) => {
+it('should be able to sign out', (done) => {
   agent
-    .post('/logout')
+    .post('/user/signout')
     .end((err, res) => {
       res.should.have.status(200);
       expect(res).to.not.have.cookie('nToken')

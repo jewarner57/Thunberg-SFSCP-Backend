@@ -1,7 +1,6 @@
 require("dotenv").config();
 const express = require('express')
 const cookieParser = require('cookie-parser')
-const isAuth = require('./middleware/isAuth')
 
 // Require database configuration
 const connectDB = require('./data/db')
@@ -16,10 +15,9 @@ app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors());
-// app.use(isAuth())
 
 // Routes
-app.use(authRoutes)
+app.use('/user', authRoutes)
 app.use(mainRoutes)
 
 // connectDB()

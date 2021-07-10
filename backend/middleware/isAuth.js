@@ -1,28 +1,19 @@
 const jwt = require('jsonwebtoken')
 
-module.exports = (req, res, next) => {
-  // Expect Authorization header to look as follows:
-  // Bearer <token>
-  const authHeader = req.get('Authorization')
+module.exports = function isAuth(req, res, next) {
+
+  // Get authToken cookie
+  const authHeader = req.cookies.authToken
   if (!authHeader) {
-    const err = new Error('Not authenticated.')
-    err.statusCode = 401
-    throw err
+    res.status(401)
+    return res.json({ err: "User is not authenticated" })
   }
-  // Get the token part of the auth header
-  const token = authHeader.split(' ')[1]
-  let decodedToken
-  try {
-    decodedToken = jwt.verify(token, process.env.SECRET_KEY)
-  } catch (err) {
-    err.statusCode = 401
-    throw err
-  }
-  if (!decodedToken) {
-    const error = new Error('Unable to authenticate.')
-    error.statusCode = 401
-    throw error
-  }
-  req.userId = decodedToken.userId
-  next()
+
+  // Decode the token
+  const decodedToken = jwt.verify(authHeader, process.env.SECRET_KEY, { complete: true }) || {};
+
+  // Set the current user
+  req.user = decodedToken.payload;
+
+  next();
 }

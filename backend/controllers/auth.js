@@ -1,8 +1,8 @@
 const User = require('../models/user');
 const jwt = require('jsonwebtoken')
 
-// LOGIN
-exports.login = async (req, res) => {
+// SIGN IN
+exports.signin = async (req, res) => {
   try {
 
     const { email, password } = req.body
@@ -29,7 +29,7 @@ exports.login = async (req, res) => {
       });
 
       // Set a cookie
-      res.cookie('nToken', token, { maxAge: 900000, httpOnly: true });
+      res.cookie('authToken', token, { maxAge: 900000, httpOnly: true });
       res.json({ message: 'Login Successful' })
     })
 
@@ -54,7 +54,7 @@ exports.signup = async (req, res) => {
     const createdUser = await newuser.save()
 
     const token = jwt.sign({ _id: createdUser._id }, process.env.SECRET_KEY, { expiresIn: '60 days' });
-    res.cookie('nToken', token, { maxAge: 900000 });
+    res.cookie('authToken', token, { maxAge: 900000, httpOnly: true });
     res.json({ createdUser })
   }
   catch (err) {
@@ -62,8 +62,8 @@ exports.signup = async (req, res) => {
   }
 }
 
-// LOGOUT
-exports.logout = (req, res) => {
-  res.clearCookie('nToken');
+// SIGN OUT
+exports.signout = (req, res) => {
+  res.clearCookie('authToken');
   res.json({ message: 'Logout Successful' })
 }
