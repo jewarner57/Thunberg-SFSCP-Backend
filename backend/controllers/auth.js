@@ -84,7 +84,7 @@ exports.riderinfo = async (req, res) => {
     const createdRider = await newRider.save()
 
     // Update the user to include the new rider
-    await User.updateOne({ rider: createdRider._id })
+    await currentUser.updateOne({ rider: createdRider._id })
 
     // Return the new rider
     return res.send({ rider: createdRider })
@@ -108,7 +108,7 @@ exports.driverinfo = async (req, res) => {
     const createdDriver = await newDriver.save()
 
     // Update the user to include the new driver
-    await User.updateOne({ driver: createdDriver._id })
+    await currentUser.updateOne({ driver: createdDriver._id })
 
     // Return the new driver
     return res.send({ driver: createdDriver })
