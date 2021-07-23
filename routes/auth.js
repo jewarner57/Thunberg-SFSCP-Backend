@@ -12,8 +12,8 @@ router.post('/signup', authController.signup)
 
 router.post('/signout', isAuth, authController.signout)
 
-router.post('/riderinfo', isAuth, authController.riderinfo)
+router.post('/rider-info', isAuth, authController.riderinfo)
 
-router.post('/driverinfo', isAuth, authController.driverinfo)
+router.post('/driver-info', isAuth, authController.driverinfo)
 
 module.exports = router
