@@ -10,3 +10,8 @@ test :
 stop :
 				docker compose -f docker-compose.yml down --remove-orphans
 
+rm :
+				docker container prune -f
+
+rmi :
+				docker rmi thunberg_backend
