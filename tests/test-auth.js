@@ -7,6 +7,8 @@ const app = require('../app.js')
 const { assert } = chai
 
 const User = require('../models/user.js')
+const Rider = require('../models/rider.js')
+const Driver = require('../models/driver.js')
 
 chai.config.includeStack = true
 
@@ -19,11 +21,26 @@ const agent = chai.request.agent(app)
 /**
  * root level hooks
  */
+let riderID = ''
+let driverID = ''
+
 after((done) => {
-  mongoose.models = {}
-  mongoose.modelSchemas = {}
-  mongoose.connection.close()
-  done()
+  Driver.deleteOne({ _id: driverID })
+    .then(() => {
+      Rider.deleteOne({ _id: riderID })
+        .then(() => {
+          mongoose.models = {}
+          mongoose.modelSchemas = {}
+          mongoose.connection.close()
+          done()
+        })
+        .catch((err) => {
+          done(err)
+        })
+    })
+    .catch((err) => {
+      done(err)
+    })
 })
 
 let userId = ''
@@ -58,7 +75,7 @@ describe('User API endpoints', () => {
 
   // Delete sample user.
   afterEach((done) => {
-    User.deleteMany({ email: ['test@user.com', 'u.com', 'another@test.com', 'updatedUser@test.com'] })
+    User.deleteMany({ email: ['test@user.com', 'user@test.com', 'another@test.com', 'updatedUser@test.com'] })
       .then(() => {
         done()
       }).catch((err) => {
@@ -89,7 +106,7 @@ describe('User API endpoints', () => {
       })
   })
 
-  // POST Login
+  // POST Signout
   it('should be able to sign in', (done) => {
 
     chai.request(app)
@@ -105,7 +122,7 @@ describe('User API endpoints', () => {
       })
   });
 
-  // POST Logout
+  // POST Signout
   it('should be able to sign out', (done) => {
     agent
       .post('/user/signout')
@@ -117,4 +134,43 @@ describe('User API endpoints', () => {
       });
   });
 
+  // POST Create Rider Profile
+  it('should be able to create a rider profile', (done) => {
+    agent
+      .post('/user/rider-info')
+      .send({
+        name: "Testing Rider Name",
+        location: "555 Post St. San Francisco California",
+        phone: "123-456-7890"
+      })
+      .end((err, res) => {
+        res.should.have.status(200);
+        // Set riderID for deletion after test
+        riderID = res.body.rider._id
+        expect(res.body.rider).to.have.property('name', 'Testing Rider Name')
+        expect(res.body.rider).to.have.property('location', '555 Post St. San Francisco California')
+        expect(res.body.rider).to.have.property('phone', '123-456-7890')
+        done();
+      });
+  });
+
+  // POST Create Driver Profile
+  it('should be able to create a driver profile', (done) => {
+    agent
+      .post('/user/driver-info')
+      .send({
+        name: "Testing Driver Name",
+        maxRiders: 3,
+        phone: "123-456-7890"
+      })
+      .end((err, res) => {
+        res.should.have.status(200);
+        // Set driverID for deletion after test
+        driverID = res.body.driver._id
+        expect(res.body.driver).to.have.property('name', 'Testing Driver Name')
+        expect(res.body.driver).to.have.property('maxRiders', 3)
+        expect(res.body.driver).to.have.property('phone', '123-456-7890')
+        done();
+      });
+  });
 })
