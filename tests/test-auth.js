@@ -29,6 +29,7 @@ after((done) => {
 let userId = ''
 
 describe('User API endpoints', () => {
+
   // Create a sample user for use in tests.
   beforeEach((done) => {
     const sampleUser = new User({
@@ -44,9 +45,24 @@ describe('User API endpoints', () => {
           .post('/user/signin')
           .send({ email: 'user@test.com', password: 'mypassword' })
           .then((res) => {
-            console.log(res.body.message)
             done()
           })
+          .catch((err) => {
+            done(err)
+          })
+      })
+      .catch((err) => {
+        done(err)
+      })
+  })
+
+  // Delete sample user.
+  afterEach((done) => {
+    User.deleteMany({ email: ['test@user.com', 'u.com', 'another@test.com', 'updatedUser@test.com'] })
+      .then(() => {
+        done()
+      }).catch((err) => {
+        done(err)
       })
   })
 
@@ -60,7 +76,7 @@ describe('User API endpoints', () => {
         expect(res).to.have.status(200)
         expect(res.body.user).to.be.an('object')
         expect(res.body.user).to.have.property('email', 'another@test.com')
-        expect(res).to.have.cookie('nToken');
+        expect(res).to.have.cookie('authToken');
 
         // check that user is actually inserted into database
         User.findOne({ email: 'another@test.com' })
@@ -72,31 +88,33 @@ describe('User API endpoints', () => {
           })
       })
   })
+
+  // POST Login
+  it('should be able to sign in', (done) => {
+
+    chai.request(app)
+      .post('/user/signin')
+      .send({ email: 'user@test.com', password: 'mypassword' })
+      .end((err, res) => {
+        if (err) { done(err) }
+
+        expect(res).to.have.status(200)
+        expect(res).to.have.cookie('authToken');
+        expect(res.body.message).to.be.equal('Login Successful')
+        done();
+      })
+  });
+
+  // POST Logout
+  it('should be able to sign out', (done) => {
+    agent
+      .post('/user/signout')
+      .end((err, res) => {
+        res.should.have.status(200);
+        expect(res).to.not.have.cookie('authToken')
+        expect(res.body.message).to.be.equal('Logout Successful')
+        done();
+      });
+  });
+
 })
-
-// POST Login
-it('should be able to sign in', (done) => {
-  chai.request(app)
-    .post('/user/signin')
-    .send({ email: 'user@test.com', password: 'mypassword' })
-    .end((err, res) => {
-      if (err) { done(err) }
-
-      expect(res).to.have.status(200)
-      expect(res).to.have.cookie('nToken');
-      expect(res.body.message).to.be.equal('Login Successful')
-      done();
-    })
-});
-
-// POST Logout
-it('should be able to sign out', (done) => {
-  agent
-    .post('/user/signout')
-    .end((err, res) => {
-      res.should.have.status(200);
-      expect(res).to.not.have.cookie('nToken')
-      expect(res.body.message).to.be.equal('Logout Successful')
-      done();
-    });
-});
