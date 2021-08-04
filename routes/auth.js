@@ -12,6 +12,8 @@ router.post('/signup', authController.signup)
 
 router.post('/signout', isAuth, authController.signout)
 
+router.get('/profile', isAuth, authController.profile)
+
 router.post('/rider-info', isAuth, authController.riderinfo)
 
 router.post('/driver-info', isAuth, authController.driverinfo)

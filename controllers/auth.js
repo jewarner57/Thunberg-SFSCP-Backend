@@ -70,6 +70,14 @@ exports.signout = (req, res) => {
   res.json({ message: 'Logout Successful' })
 }
 
+// GET PROFILE
+exports.profile = async (req, res) => {
+  const currentUser = await User.findOne({ _id: req.user._id })
+  currentUser.password = null
+
+  return res.status(200).send({ user: currentUser })
+}
+
 // CREATE RIDER PROFILE
 exports.riderinfo = async (req, res) => {
   try {
