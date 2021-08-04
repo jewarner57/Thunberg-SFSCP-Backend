@@ -28,7 +28,7 @@ app.use('/rides/driver', driverRideRoutes)
 const run = async () => {
   // Connect to Mongoose database. Connection code in data/db.js
   await connectDB()
-  await app.listen(5000)
+  await app.listen(process.env.PORT)
 }
 
 run()
