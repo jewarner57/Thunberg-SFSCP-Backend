@@ -11,3 +11,5 @@ services:
         - /usr/src/thunberg/node_modules
     ports:
       - "5000:5000"
+
+    command: npm run test
