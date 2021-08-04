@@ -1,0 +1,13 @@
+services:
+  backend:
+    restart: always
+    build:
+      context: ./
+    env_file:
+      - .env
+    container_name: api
+    volumes:
+        - .:/usr/src/thunberg/
+        - /usr/src/thunberg/node_modules
+    ports:
+      - "5000:5000"
