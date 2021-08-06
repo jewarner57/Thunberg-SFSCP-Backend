@@ -41,6 +41,35 @@ exports.joinRide = async (req, res) => {
 exports.leaveRide = async (req, res) => {
   try {
 
+    const rideToLeave = await Ride.findOne({ _id: req.body.id })
+    const currentUser = await User.findOne({ _id: req.user._id })
+
+    if (!currentUser.rider) { return res.status(401).send({ error: 'User is not a rider yet.' }) }
+
+    // Test if the rider is added to the ride
+    let riderIsInRide = false
+
+    console.log(rideToLeave)
+
+    rideToLeave.riders.forEach((rider) => {
+      if (String(rider.rider) === String(currentUser.rider)) {
+        riderIsInRide = true
+      }
+    })
+
+    // If the rider is not in the ride, return an error
+    if (!riderIsInRide) { return res.status(409).send({ error: 'User is not in this ride' }) }
+
+    // Remove the rider from the ride
+    const riderArray = rideToLeave.riders
+    const filteredRiderArray = riderArray.filter((ride) => {
+      return !ride.rider === currentUser.rider
+    })
+
+    const leftRide = await Ride.findOneAndUpdate({ _id: rideToLeave._id }, { $set: { riders: filteredRiderArray } }, { new: false })
+
+    return res.status(200).send({ message: 'Successfully left ride.', ride: leftRide._id })
+
 
   } catch (err) {
     return res.status(500).send({ error: err.message })
