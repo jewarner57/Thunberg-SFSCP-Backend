@@ -6,7 +6,7 @@ const router = express.Router()
 
 const riderRidesController = require('../controllers/riderRides')
 
-router.post('/schedule', isAuth, riderRidesController.getSchedule)
+router.get('/schedule', isAuth, riderRidesController.getSchedule)
 
 router.post('/join-ride', isAuth, riderRidesController.joinRide)
 

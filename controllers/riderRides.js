@@ -7,6 +7,15 @@ const Driver = require('../models/driver')
 exports.getSchedule = async (req, res) => {
   try {
 
+    const currentUser = await User.findOne({ _id: req.user._id })
+    const riderRides = await Ride.find({ riders: { $elemMatch: { rider: currentUser.rider } }, status: 'Scheduled' })
+
+    console.log(riderRides)
+
+    if (!currentUser.rider) { return res.status(401).send({ error: 'User is not a rider yet.' }) }
+
+    return res.status(200).json({ schedule: riderRides })
+
 
   } catch (err) {
     return res.status(500).send({ error: err.message })
@@ -21,6 +30,7 @@ exports.joinRide = async (req, res) => {
     const rider = await Rider.findOne({ _id: currentUser.rider })
 
     if (!currentUser.rider) { return res.status(401).send({ error: 'User is not a rider yet.' }) }
+    if (rideToJoin.status === 'Archived') { return res.status(401).send({ error: 'Ride is no longer active. It may have been canceled.' }) }
 
     const riderArray = rideToJoin.riders
     riderArray.push({
@@ -45,11 +55,10 @@ exports.leaveRide = async (req, res) => {
     const currentUser = await User.findOne({ _id: req.user._id })
 
     if (!currentUser.rider) { return res.status(401).send({ error: 'User is not a rider yet.' }) }
+    if (rideToLeave.status === 'Archived') { return res.status(401).send({ error: 'Ride is no longer active. It may have been canceled.' }) }
 
     // Test if the rider is added to the ride
     let riderIsInRide = false
-
-    console.log(rideToLeave)
 
     rideToLeave.riders.forEach((rider) => {
       if (String(rider.rider) === String(currentUser.rider)) {
@@ -69,7 +78,6 @@ exports.leaveRide = async (req, res) => {
     const leftRide = await Ride.findOneAndUpdate({ _id: rideToLeave._id }, { $set: { riders: filteredRiderArray } }, { new: false })
 
     return res.status(200).send({ message: 'Successfully left ride.', ride: leftRide._id })
-
 
   } catch (err) {
     return res.status(500).send({ error: err.message })
