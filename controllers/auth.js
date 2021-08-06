@@ -7,7 +7,8 @@ const jwt = require('jsonwebtoken')
 exports.signin = async (req, res) => {
   try {
 
-    const { email, password } = req.body
+    const password = req.body.password
+    const email = req.body.email.toLowerCase()
 
     // Find this user name
     const user = await User.findOne({ email }, 'email password')
@@ -45,7 +46,10 @@ exports.signin = async (req, res) => {
 exports.signup = async (req, res) => {
   try {
     // Create User
-    const newuser = new User(req.body);
+    const password = req.body.password
+    const email = req.body.email.toLowerCase()
+
+    const newuser = new User({ password, email });
 
     const user = await User.findOne({ email: newuser.email })
 
