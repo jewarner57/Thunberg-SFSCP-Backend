@@ -1,11 +1,15 @@
 const User = require('../models/user');
 const Ride = require('../models/ride')
-const Driver = require('../models/driver')
+const Driver = require('../models/driver');
+const driver = require('../models/driver');
 
 // Get Driver Schedule
 exports.getSchedule = async (req, res) => {
   try {
+    const currentUser = await User.findOne({ _id: req.user._id })
+    const driverRides = await Ride.find({ driver_id: currentUser.driver, status: 'Scheduled' })
 
+    return res.status(200).json({ schedule: driverRides })
 
   } catch (err) {
     return res.status(500).send({ error: err.message })

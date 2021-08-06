@@ -6,7 +6,7 @@ const router = express.Router()
 
 const driverRidesController = require('../controllers/driverRides')
 
-router.post('/schedule', isAuth, driverRidesController.getSchedule)
+router.get('/schedule', isAuth, driverRidesController.getSchedule)
 
 router.post('/create-ride', isAuth, driverRidesController.createRide)
 

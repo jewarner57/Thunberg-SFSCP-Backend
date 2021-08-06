@@ -95,7 +95,7 @@ exports.riderinfo = async (req, res) => {
     await currentUser.updateOne({ rider: createdRider._id })
 
     // Return the new rider
-    return res.send({ rider: createdRider })
+    return res.status(200).send({ rider: createdRider })
   }
   catch (err) {
     return res.status(400).send({ err });
@@ -119,7 +119,7 @@ exports.driverinfo = async (req, res) => {
     await currentUser.updateOne({ driver: createdDriver._id })
 
     // Return the new driver
-    return res.send({ driver: createdDriver })
+    return res.status(200).send({ driver: createdDriver })
   }
   catch (err) {
     return res.status(400).send({ err });
