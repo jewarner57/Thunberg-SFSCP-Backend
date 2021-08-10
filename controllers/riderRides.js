@@ -83,3 +83,19 @@ exports.leaveRide = async (req, res) => {
     return res.status(500).send({ error: err.message })
   }
 }
+
+// Find Avaliable Rides
+exports.findRide = async (req, res) => {
+  try {
+
+    const currentUser = await User.findOne({ _id: req.user._id })
+    const rides = await Ride.find({ status: 'Scheduled' })
+
+    if (!currentUser.rider) { return res.status(401).send({ error: 'User is not a rider yet.' }) }
+
+    return res.status(200).json({ rides: rides })
+
+  } catch (err) {
+    return res.status(500).send({ error: err.message })
+  }
+}

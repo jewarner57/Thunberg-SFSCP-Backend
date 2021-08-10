@@ -12,4 +12,6 @@ router.post('/join-ride', isAuth, riderRidesController.joinRide)
 
 router.post('/leave-ride', isAuth, riderRidesController.leaveRide)
 
+router.get('/find-ride', isAuth, riderRidesController.findRide)
+
 module.exports = router
